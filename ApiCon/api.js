@@ -23,11 +23,25 @@ moongoose.connect('mongodb://localhost:27017/mqttJS', function (err){
 
 //--------------------Schema----------------------//
 var mqttJS = moongoose.Schema({
-    Info: String,
+    temperatura: String,
     Num: Number
 });
 
-var Tabla = moongoose.model('mqttj', mqttJS);
+var Tabla = moongoose.model('mqttjs', mqttJS);
+
+//---------------POST-----------------------------------//
+app.post('/item',asyncHandler( async (req, res, next) => {
+    console.log(JSON.stringify(req.body["temperatura"]));
+    
+    var insert = new Tabla({temperatura:req.body['temperatura'],Num:1});
+    insert.save(function(err){
+        if(err) {
+            throw err;
+        }
+        console.log('Guardado con exito')
+    });
+    res.json({"hola":req.body["temperatura"]});
+}));
 
 //-----------GET-----------------------------------------------//
 app.get('/mqttjs',asyncHandler( async (req, res, next) => {
@@ -40,18 +54,7 @@ app.get('/mqttjs',asyncHandler( async (req, res, next) => {
     });
 }));
 
-//---------------POST-----------------------------------//
-app.post('/item',asyncHandler( async (req, res, next) => {
-    console.log(req.body["Nombre"]);
-    var insert = new Tabla({Info:req.body["Nombre"],Num:1});
-    insert.save(function(err){
-        if(err) {
-            throw err;
-        }
-        console.log('Guardado con exito')
-    });
-    res.json({"hola":req.body["Nombre"]});
-}));
+
 
 var server = app.listen(9090, function () {
     console.log('Server is running..'); 
